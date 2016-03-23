@@ -1,0 +1,18 @@
+{
+  "name": "glance",
+  "version": "1.0.0",
+  "description": "Lofi glance testing app",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nhsalpha/glance.git"
+  },
+  "author": "#nhsalpha",
+  "bugs": {
+    "url": "https://github.com/nhsalpha/glance/issues"
+  },
+  "homepage": "https://github.com/nhsalpha/glance#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
