@@ -5,6 +5,7 @@ var init = function() {
 container = document.getElementById("container");
 maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
+wordLength = 6;
 
 var timeoutPromise = function(duration) {
   return new Promise(function(fulfill, reject) {
@@ -19,6 +20,13 @@ var showFixationRectangle = function() {
 };
 
 var showMask = function() {
+
+  var mask = '';
+  for (var i=0; i<= wordLength; i++) {
+    mask += nonLetterCharacters[Math.floor(Math.random() * nonLetterCharacters.length)];
+  }
+  maskElement.textContent = mask;
+
   container.className = "mask";
 
   return timeoutPromise(200);
@@ -46,5 +54,3 @@ var runTrial = function(word, exposureDuration) {
 }
 
 runTrial("fart", 1000);
-
-//document.getElementById('word').innerHTML(word);
