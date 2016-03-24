@@ -46,5 +46,3 @@ var runTrial = function(word, exposureDuration) {
 }
 
 runTrial("fart", 1000);
-
-//document.getElementById('word').innerHTML(word);
