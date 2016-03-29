@@ -71,6 +71,10 @@ html, body {
   background: url('/img/frame.svg') no-repeat center;
 }
 
+.polarity-reversed #fixation-rectangle {
+  background-image: url('/img/frame-inverse.svg');
+}
+
 #mask,
 #word,
 #prompt {
