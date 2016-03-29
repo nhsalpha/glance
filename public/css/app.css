@@ -30,6 +30,16 @@ html, body {
   font-size: 6mm; /* 4mm cap height */
 }
 
+.polarity-normal {
+  background: #fff;
+  color: #000;
+}
+
+.polarity-reversed {
+  background: #000;
+  color: #fff;
+}
+
 #container > div {
   display: none;
 }

@@ -181,8 +181,43 @@ var sampleArray = function(array, sampleLength) {
   return array.slice(-sampleLength);
 };
 
-var wordList = generateRandomWordList(10);
+var experimentalConditions = function() {
+  var fonts = ["fs-me", "frutiger"],
+      polarity = ["polarity-normal", "polarity-reversed"],
+      conditions = [];
 
-runSeries(wordList).then(function(log) {
+  polarity = shuffleArray(polarity);
+  for (var i = 0; i < polarity.length; ++i) {
+    fonts = shuffleArray(fonts);
+
+    for (var j = 0; j < fonts.length; ++j) {
+      conditions.push(polarity[i] + " " + fonts[j]);
+    }
+  }
+
+  return conditions;
+};
+
+var runExperiment = function() {
+  var conditions = experimentalConditions(),
+      wordList = generateRandomWordList(10),
+      x = function(output) {
+        if (output) {
+          console.log(output);
+        }
+
+        if (conditions.length > 0) {
+          document.body.className = conditions.shift();
+          return runSeries(shuffleArray(wordList)).then(x);
+        }
+        else {
+          return "FINISHED!";
+        }
+      };
+
+  return x();
+};
+
+runExperiment().then(function(log) {
   console.log(log);
 });
