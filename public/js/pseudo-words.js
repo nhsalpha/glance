@@ -1,4 +1,4 @@
-var psuedoWords = [
+var pseudoWords = [
   'acrope',
   'advind',
   'adving',

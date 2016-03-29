@@ -20,7 +20,6 @@ var showFixationRectangle = function() {
 };
 
 var showMask = function() {
-
   var mask = '';
   for (var i=0; i<= wordLength; i++) {
     mask += nonLetterCharacters[Math.floor(Math.random() * nonLetterCharacters.length)];
@@ -44,16 +43,22 @@ var awaitResponse = function(real) {
 
   var listener;
   var promise = new Promise(function(fulfill, reject) {
-    window.setTimeout(reject, 5000);
+    var startTime = Date.now();
+    window.setTimeout(function() { reject({response: "timeout"}); }, 5000);
 
     listener = function(event) {
-      console.log(event);
+      var resolution = {
+        response: undefined,
+        responseTime: Date.now() - startTime
+      };
 
-      if (event.code === "KeyQ") {
-        real ? fulfill() : reject();
+      if (event.keyCode === 81) {
+        resolution.response = "real";
+        real ? fulfill(resolution) : reject(resolution);
       }
-      else if (event.code === "KeyP") {
-        real ? reject() : fulfill();
+      else if (event.keyCode === 80) {
+        resolution.response = "pseudo";
+        real ? reject(resolution) : fulfill(resolution);
       }
     };
 
@@ -78,34 +83,141 @@ var runTrial = function(word, exposureDuration) {
 
 var runSeries = function(words) {
   var words = words.slice(0),
+      log = [],
       exposureDuration = 1000,
       x = function x() {
         if (words.length > 0) {
-          return runTrial(words.shift(), exposureDuration).then(
-            function() {
+          var nextWord = words.shift(),
+              trialResult = {
+                word: nextWord.text,
+                real: nextWord.real,
+                duration: exposureDuration
+              };
+
+          return runTrial(nextWord, exposureDuration).then(
+            function(resolution) {
+              trialResult.response = resolution.response;
+              trialResult.responseTime = resolution.responseTime;
+              log.push(trialResult);
+
               exposureDuration = exposureDuration * 0.75;
               return x();
             },
-            function() {
+            function(resolution) {
+              trialResult.response = resolution.response;
+              trialResult.responseTime = resolution.responseTime;
+              log.push(trialResult);
+
               exposureDuration = exposureDuration * 1.5;
               return x();
             }
           );
         }
         else {
-          return "DONE";
+          return log;
         }
       };
 
   return x();
 };
 
-var wordList = [
-  {text: "farted", real: true},
-  {text: "guffed", real: true},
-  {text: "trumpe", real: false},
-  {text: "parped", real: true},
-  {text: "flufed", real: false}
-];
+var generateRandomWordList = function(length) {
+  var realSample = sampleArray(words, length / 2),
+      pseudoSample = sampleArray(pseudoWords, length / 2);
+      wordList = [];
 
-runSeries(wordList).then(window.alert);
+  for (var i = 0; i < length / 2; ++i) {
+    wordList.push({
+      text: realSample[i],
+      real: true
+    });
+
+    wordList.push({
+      text: pseudoSample[i],
+      real: false
+    });
+  }
+
+  return shuffleArray(wordList);
+};
+
+var shuffleArray = function(array) {
+  var i = array.length,
+      value,
+      swapIndex;
+
+  array = array.slice(0);
+
+  while (i > 0) {
+    swapIndex = Math.floor(Math.random() * i);
+
+    value = array[i - 1];
+    array[i - 1] = array[swapIndex];
+    array[swapIndex] = value;
+
+    --i;
+  }
+
+  return array;
+}
+
+var sampleArray = function(array, sampleLength) {
+  var i = array.length,
+      value,
+      swapIndex;
+
+  array = array.slice(0);
+
+  while (i > 0 && i >= array.length - sampleLength) {
+    swapIndex = Math.floor(Math.random() * i);
+
+    value = array[i];
+    array[i] = array[swapIndex];
+    array[swapIndex] = value;
+
+    --i;
+  }
+
+  return array.slice(-sampleLength);
+};
+
+var experimentalConditions = function() {
+  var fonts = ["fs-me", "frutiger"],
+      polarity = ["polarity-normal", "polarity-reversed"],
+      conditions = [];
+
+  polarity = shuffleArray(polarity);
+  for (var i = 0; i < polarity.length; ++i) {
+    fonts = shuffleArray(fonts);
+
+    for (var j = 0; j < fonts.length; ++j) {
+      conditions.push(polarity[i] + " " + fonts[j]);
+    }
+  }
+
+  return conditions;
+};
+
+var runExperiment = function() {
+  var conditions = experimentalConditions(),
+      wordList = generateRandomWordList(10),
+      x = function(output) {
+        if (output) {
+          console.log(output);
+        }
+
+        if (conditions.length > 0) {
+          document.body.className = conditions.shift();
+          return runSeries(shuffleArray(wordList)).then(x);
+        }
+        else {
+          return "FINISHED!";
+        }
+      };
+
+  return x();
+};
+
+runExperiment().then(function(log) {
+  console.log(log);
+});
