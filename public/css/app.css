@@ -10,22 +10,27 @@ html, body {
   height: 100%;
 }
 
-.practice {
+body {
+  font-family: courier, monospace;
+  font-size: 20px;
+}
+
+.practice #word {
   font-family: Georgia, serif;
   font-size: 12mm; /* 8mm cap height */
 }
 
-.arial {
+.arial #word {
   font-family: Arial, sans-serif;
   font-size: 6mm; /* 4mm cap height */
 }
 
-.frutiger {
+.frutiger #word {
   font-family: 'Frutiger LT W01_55 Roma1475738', sans-serif;
   font-size: 6mm; /* 4mm cap height */
 }
 
-.fs-me {
+.fs-me #word {
   font-family: 'fs-me', sans-serif;
   font-size: 6mm; /* 4mm cap height */
 }
