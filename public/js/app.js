@@ -43,14 +43,22 @@ var awaitResponse = function(real) {
 
   var listener;
   var promise = new Promise(function(fulfill, reject) {
-    window.setTimeout(function() { reject("timeout"); }, 5000);
+    var startTime = Date.now();
+    window.setTimeout(function() { reject({response: "timeout"}); }, 5000);
 
     listener = function(event) {
+      var resolution = {
+        response: undefined,
+        responseTime: Date.now() - startTime
+      };
+
       if (event.keyCode === 81) {
-        real ? fulfill("real") : reject("real");
+        resolution.response = "real";
+        real ? fulfill(resolution) : reject(resolution);
       }
       else if (event.keyCode === 80) {
-        real ? reject("pseudo") : fulfill("pseudo");
+        resolution.response = "pseudo";
+        real ? reject(resolution) : fulfill(resolution);
       }
     };
 
@@ -87,15 +95,17 @@ var runSeries = function(words) {
               };
 
           return runTrial(nextWord, exposureDuration).then(
-            function(response) {
-              trialResult.response = response;
+            function(resolution) {
+              trialResult.response = resolution.response;
+              trialResult.responseTime = resolution.responseTime;
               log.push(trialResult);
 
               exposureDuration = exposureDuration * 0.75;
               return x();
             },
-            function(response) {
-              trialResult.response = response;
+            function(resolution) {
+              trialResult.response = resolution.response;
+              trialResult.responseTime = resolution.responseTime;
               log.push(trialResult);
 
               exposureDuration = exposureDuration * 1.5;
