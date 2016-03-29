@@ -121,13 +121,67 @@ var runSeries = function(words) {
   return x();
 };
 
-var wordList = [
-  {text: "farted", real: true},
-  {text: "guffed", real: true},
-  {text: "trumpe", real: false},
-  {text: "parped", real: true},
-  {text: "flufed", real: false}
-];
+var generateRandomWordList = function(length) {
+  var realSample = sampleArray(words, length / 2),
+      pseudoSample = sampleArray(pseudoWords, length / 2);
+      wordList = [];
+
+  for (var i = 0; i < length / 2; ++i) {
+    wordList.push({
+      text: realSample[i],
+      real: true
+    });
+
+    wordList.push({
+      text: pseudoSample[i],
+      real: false
+    });
+  }
+
+  return shuffleArray(wordList);
+};
+
+var shuffleArray = function(array) {
+  var i = array.length,
+      value,
+      swapIndex;
+
+  array = array.slice(0);
+
+  while (i > 0) {
+    swapIndex = Math.floor(Math.random() * i);
+
+    value = array[i - 1];
+    array[i - 1] = array[swapIndex];
+    array[swapIndex] = value;
+
+    --i;
+  }
+
+  return array;
+}
+
+var sampleArray = function(array, sampleLength) {
+  var i = array.length,
+      value,
+      swapIndex;
+
+  array = array.slice(0);
+
+  while (i > 0 && i >= array.length - sampleLength) {
+    swapIndex = Math.floor(Math.random() * i);
+
+    value = array[i];
+    array[i] = array[swapIndex];
+    array[swapIndex] = value;
+
+    --i;
+  }
+
+  return array.slice(-sampleLength);
+};
+
+var wordList = generateRandomWordList(10);
 
 runSeries(wordList).then(function(log) {
   console.log(log);
