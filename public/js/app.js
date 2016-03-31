@@ -207,8 +207,6 @@ var experimentalConditions = function() {
     }
   }
 
-  console.log(conditions);
-
   return conditions;
 };
 
