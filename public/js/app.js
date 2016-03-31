@@ -86,7 +86,6 @@ var runTrial = function(word, exposureDuration) {
 // Run series of trials, with changing "step duration":
 var runSeries = function(words, state) {
   var words = words.slice(0),
-      log = [],
       exposureDuration = 1000,
       x = function x() {
         if (words.length > 0) {
@@ -104,7 +103,7 @@ var runSeries = function(words, state) {
               trialResult.response = resolution.response;
               trialResult.responseTime = resolution.responseTime;
               trialResult.correct = true;
-              log.push(trialResult);
+              experimentLog.push(trialResult);
 
               exposureDuration = exposureDuration * 0.75;
               return x();
@@ -114,7 +113,7 @@ var runSeries = function(words, state) {
               trialResult.response = resolution.response;
               trialResult.responseTime = resolution.responseTime;
               trialResult.correct = false;
-              log.push(trialResult);
+              experimentLog.push(trialResult);
 
               exposureDuration = exposureDuration * 1.5;
               return x();
@@ -122,7 +121,7 @@ var runSeries = function(words, state) {
           );
         }
         else {
-          return log;
+          return true;
         }
       };
 
@@ -218,11 +217,7 @@ var experimentalConditions = function() {
 var runExperiment = function() {
   var conditions = experimentalConditions(),
       wordList = generateRandomWordList(2),
-      x = function(output) {
-        if (output) {
-          experimentLog.push(output);
-        }
-
+      x = function() {
         if (conditions.length > 0) {
           var state = conditions.shift();
           document.body.className = state;
@@ -236,13 +231,13 @@ var runExperiment = function() {
   return x();
 };
 
-runExperiment().then(function(log) {
-  console.log(log);
+runExperiment().then(function() {
   console.log(experimentLog);
 
   var request = new XMLHttpRequest();
+  var data = JSON.stringify(experimentLog);
   request.addEventListener("load", requestListener);
-  request.open("GET", "/end-experiment");
+  request.open("GET", "/end-experiment?data=" + data);
   request.send();
 
 });
