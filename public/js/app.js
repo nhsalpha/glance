@@ -2,6 +2,7 @@ container = document.getElementById("container");
 maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
 wordLength = 6;
+experimentLog = [];
 
 var timeoutPromise = function(duration) {
   return new Promise(function(fulfill, reject) {
@@ -83,7 +84,7 @@ var runTrial = function(word, exposureDuration) {
 };
 
 // Run series of trials, with changing "step duration":
-var runSeries = function(words) {
+var runSeries = function(words, state) {
   var words = words.slice(0),
       log = [],
       exposureDuration = 1000,
@@ -93,7 +94,8 @@ var runSeries = function(words) {
               trialResult = {
                 word: nextWord.text,
                 real: nextWord.real,
-                duration: exposureDuration
+                duration: exposureDuration,
+                state: state
               };
 
           return runTrial(nextWord, exposureDuration).then(
@@ -215,15 +217,16 @@ var experimentalConditions = function() {
 // Run the whole experiment:
 var runExperiment = function() {
   var conditions = experimentalConditions(),
-      wordList = generateRandomWordList(10),
+      wordList = generateRandomWordList(2),
       x = function(output) {
         if (output) {
-          console.log(output);
+          experimentLog.push(output);
         }
 
         if (conditions.length > 0) {
-          document.body.className = conditions.shift();
-          return runSeries(shuffleArray(wordList)).then(x);
+          var state = conditions.shift();
+          document.body.className = state;
+          return runSeries(shuffleArray(wordList), state).then(x);
         }
         else {
           return "FINISHED!";
@@ -235,4 +238,15 @@ var runExperiment = function() {
 
 runExperiment().then(function(log) {
   console.log(log);
+  console.log(experimentLog);
+
+  var request = new XMLHttpRequest();
+  request.addEventListener("load", requestListener);
+  request.open("GET", "/end-experiment");
+  request.send();
+
 });
+
+var requestListener = function() {
+  console.log(this.responseText);
+}
