@@ -1,7 +1,3 @@
-var init = function() {
-  //set up stage
-}
-
 container = document.getElementById("container");
 maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
