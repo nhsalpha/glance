@@ -101,6 +101,7 @@ var runSeries = function(words) {
             function(resolution) {
               trialResult.response = resolution.response;
               trialResult.responseTime = resolution.responseTime;
+              trialResult.correct = true;
               log.push(trialResult);
 
               exposureDuration = exposureDuration * 0.75;
@@ -110,6 +111,7 @@ var runSeries = function(words) {
             function(resolution) {
               trialResult.response = resolution.response;
               trialResult.responseTime = resolution.responseTime;
+              trialResult.correct = false;
               log.push(trialResult);
 
               exposureDuration = exposureDuration * 1.5;
