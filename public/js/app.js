@@ -224,7 +224,7 @@ var runExperiment = function() {
           return runSeries(shuffleArray(wordList), state).then(x);
         }
         else {
-          return "FINISHED!";
+          return true;
         }
       };
 
@@ -232,16 +232,6 @@ var runExperiment = function() {
 };
 
 runExperiment().then(function() {
-  console.log(experimentLog);
-
-  var request = new XMLHttpRequest();
   var data = JSON.stringify(experimentLog);
-  request.addEventListener("load", requestListener);
-  request.open("GET", "/end-experiment?data=" + data);
-  request.send();
-
+  window.location.href = "/complete?data=" + data;
 });
-
-var requestListener = function() {
-  console.log(this.responseText);
-}

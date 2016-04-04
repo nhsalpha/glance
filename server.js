@@ -17,14 +17,14 @@ app.use(express.static('public'));
 app.set('view engine', 'jade');
 
 app.get('/', function (req, res) {
-  res.render('index', { title: 'Glance test' });
+  res.render('index');
 });
 
 app.get('/test', function (req, res) {
-  res.render('test', { title: 'Glance test' });
+  res.render('test');
 });
 
-app.get('/end-experiment', function (req, res) {
+app.get('/complete', function (req, res) {
 
   var experiment = JSON.parse(req.query.data);
   var timestamp = new Date();
@@ -37,13 +37,19 @@ app.get('/end-experiment', function (req, res) {
                 + '-results.csv';
 
   json2csv({ data: experiment, fields: csvFields }, function(err, csv) {
-    if (err) console.log(err);
+    if (err) {
+      console.log(err);
+      res.render('complete', { success: false, message: 'json2csv formatting fail' });
+    }
     fs.writeFile('saved-data/' + fileName, csv, function(err) {
-      if (err) throw err;
+      if (err) {
+        console.log(err);
+        res.render('complete', { success: false, message: 'csv file not saved' });
+      }
       console.log('file saved');
     });
   });
-  res.send('finished');
+  res.render('complete', { success: true, message: 'success' });
 });
 
 app.listen(3000, function () {
