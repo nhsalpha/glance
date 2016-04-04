@@ -1,6 +1,9 @@
 # Fonts folder
 fonts
 
+# CSV files
+*.csv
+
 # Logs
 logs
 *.log

@@ -14,6 +14,7 @@
   "homepage": "https://github.com/nhsalpha/glance#readme",
   "dependencies": {
     "express": "^4.13.4",
-    "jade": "^1.11.0"
+    "jade": "^1.11.0",
+    "json2csv": "^3.2.0"
   }
 }
