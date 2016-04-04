@@ -216,7 +216,7 @@ var experimentalConditions = function() {
 // Run the whole experiment:
 var runExperiment = function() {
   var conditions = experimentalConditions(),
-      wordList = generateRandomWordList(2),
+      wordList = generateRandomWordList(10),
       x = function() {
         if (conditions.length > 0) {
           var state = conditions.shift();
