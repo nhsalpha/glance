@@ -86,7 +86,7 @@ var runTrial = function(word, exposureDuration) {
 // Run series of trials, with changing "step duration":
 var runSeries = function(words, state) {
   var words = words.slice(0),
-      exposureDuration = 1000,
+      exposureDuration = 500,
       x = function x() {
         if (words.length > 0) {
           var nextWord = words.shift(),
@@ -216,7 +216,7 @@ var experimentalConditions = function() {
 // Run the whole experiment:
 var runExperiment = function() {
   var conditions = experimentalConditions(),
-      wordList = generateRandomWordList(10),
+      wordList = generateRandomWordList(2),
       x = function() {
         if (conditions.length > 0) {
           var state = conditions.shift();
@@ -231,7 +231,26 @@ var runExperiment = function() {
   return x();
 };
 
+// Run the experiment then post to server
 runExperiment().then(function() {
+  var http = new XMLHttpRequest();
+  var url = "/save-results";
   var data = JSON.stringify(experimentLog);
-  window.location.href = "/complete?data=" + data;
+  http.open("POST", url, true);
+  http.setRequestHeader("Content-type", "application/json");
+  http.onreadystatechange = function() {
+    if(http.readyState == 4 && http.status == 200) {
+      concludeExperiment(JSON.parse(http.responseText));
+    }
+  }
+  http.send(data);
 });
+
+// Conclude
+var concludeExperiment = function(response) {
+  if (response.success === true) {
+    window.location.href = '/complete';
+  } else {
+    window.location.href = '/error';
+  }
+}
