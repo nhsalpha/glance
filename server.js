@@ -6,8 +6,6 @@ var fs = require('fs');
 
 app.use(bodyParser.json());
 
-var csvFields = ['correct', 'duration', 'real', 'response', 'responseTime', 'state', 'word'];
-
 function leadingZero(number) {
   if (number.toString().length === 1) {
     number = '0' + number;
@@ -45,7 +43,7 @@ app.post('/save-results', function(req, res) {
                 + leadingZero(timestamp.getSeconds())
                 + '-results.csv';
 
-  json2csv({ data: experiment, fields: csvFields }, function(err, csv) {
+  json2csv({ data: experiment }, function(err, csv) {
     if (err) {
       console.log(err);
       res.json({ success: false, message: 'json2csv: ' + err });
