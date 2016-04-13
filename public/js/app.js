@@ -2,13 +2,127 @@ container = document.getElementById("container");
 maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
 wordLength = 6;
+sampleSize = 2;
 experimentLog = [];
+
+// -------------------- Utility functions --------------------
 
 var timeoutPromise = function(duration) {
   return new Promise(function(fulfill, reject) {
     window.setTimeout(fulfill, duration);
   });
 };
+
+// Shuffle an array
+var shuffleArray = function(array) {
+  var i = array.length,
+      value,
+      swapIndex;
+
+  array = array.slice(0);
+
+  while (i > 0) {
+    swapIndex = Math.floor(Math.random() * i);
+
+    value = array[i - 1];
+    array[i - 1] = array[swapIndex];
+    array[swapIndex] = value;
+
+    --i;
+  }
+
+  return array;
+}
+
+
+// -------------------- Glance test setup --------------------
+
+// Generate the list of words for the trial:
+var generateRandomWordList = function(length) {
+  var realSample = sampleArray(words, length / 2),
+      pseudoSample = sampleArray(pseudoWords, length / 2);
+      wordList = [];
+
+  // Push words to wordList array as objects
+  for (var i = 0; i < length / 2; ++i) {
+    wordList.push({
+      text: realSample[i],
+      real: true
+    });
+
+    wordList.push({
+      text: pseudoSample[i],
+      real: false
+    });
+  }
+
+  return shuffleArray(wordList);
+};
+
+// Environmental conditions - polarity, fonts we're testing...
+var experimentalConditions = function() {
+  var fonts = ["fs-me", "frutiger"],
+      polarity = ["polarity-normal", "polarity-reversed"],
+      conditions = [];
+
+  polarity = shuffleArray(polarity);
+  for (var i = 0; i < polarity.length; ++i) {
+    fonts = shuffleArray(fonts);
+
+    for (var j = 0; j < fonts.length; ++j) {
+      conditions.push(polarity[i] + " " + fonts[j]);
+    }
+  }
+
+  return conditions;
+};
+
+// Get samples from the global word / pseudoWord arays:
+var sampleArray = function(array, sampleLength) {
+  var i = array.length,
+      value,
+      swapIndex;
+
+  // Clone the passed in array:
+  array = array.slice(0);
+
+  // Shuffle it:
+  while (i > 0 && i >= array.length - sampleLength) {
+    swapIndex = Math.floor(Math.random() * i);
+
+    value = array[i];
+    array[i] = array[swapIndex];
+    array[swapIndex] = value;
+
+    --i;
+  }
+
+  // Send back the array, with sampleLength items:
+  return array.slice(-sampleLength);
+};
+
+// Post experiment data to server and redirect
+var saveResults = function() {
+  var http = new XMLHttpRequest();
+  var url = "/save-results";
+  var data = JSON.stringify(experimentLog);
+  http.open("POST", url, true);
+  http.setRequestHeader("Content-type", "application/json");
+  http.onreadystatechange = function() {
+    if(http.readyState == 4 && http.status == 200) {
+      var response = JSON.parse(http.responseText);
+      if (response.success === true) {
+        window.location.href = '/complete';
+      } else {
+        window.location.href = '/error';
+      }
+    }
+  }
+  http.send(data);
+}
+
+
+// ----------------------- Glance test -----------------------
 
 // Trial part 1: show rectangle frame
 var showFixationRectangle = function() {
@@ -128,95 +242,10 @@ var runSeries = function(words, state) {
   return x();
 };
 
-// Generate the list of words for the trial:
-var generateRandomWordList = function(length) {
-  var realSample = sampleArray(words, length / 2),
-      pseudoSample = sampleArray(pseudoWords, length / 2);
-      wordList = [];
-
-  // Push words to wordList array as objects
-  for (var i = 0; i < length / 2; ++i) {
-    wordList.push({
-      text: realSample[i],
-      real: true
-    });
-
-    wordList.push({
-      text: pseudoSample[i],
-      real: false
-    });
-  }
-
-  return shuffleArray(wordList);
-};
-
-// Shuffle an array
-var shuffleArray = function(array) {
-  var i = array.length,
-      value,
-      swapIndex;
-
-  array = array.slice(0);
-
-  while (i > 0) {
-    swapIndex = Math.floor(Math.random() * i);
-
-    value = array[i - 1];
-    array[i - 1] = array[swapIndex];
-    array[swapIndex] = value;
-
-    --i;
-  }
-
-  return array;
-}
-
-// Get samples from the global word / pseudoWord arays:
-var sampleArray = function(array, sampleLength) {
-  var i = array.length,
-      value,
-      swapIndex;
-
-  // Clone the passed in array:
-  array = array.slice(0);
-
-  // Shuffle it:
-  while (i > 0 && i >= array.length - sampleLength) {
-    swapIndex = Math.floor(Math.random() * i);
-
-    value = array[i];
-    array[i] = array[swapIndex];
-    array[swapIndex] = value;
-
-    --i;
-  }
-
-  // Send back the array, with sampleLength items:
-  return array.slice(-sampleLength);
-};
-
-// Environment
-var experimentalConditions = function() {
-  var fonts = ["fs-me", "frutiger"],
-      polarity = ["polarity-normal", "polarity-reversed"],
-      conditions = [];
-
-  polarity = shuffleArray(polarity);
-  for (var i = 0; i < polarity.length; ++i) {
-    fonts = shuffleArray(fonts);
-
-    for (var j = 0; j < fonts.length; ++j) {
-      conditions.push(polarity[i] + " " + fonts[j]);
-    }
-  }
-
-  return conditions;
-};
-
-// Run the whole experiment:
+// The whole experiment - all font and polarity combinations
 var runExperiment = function() {
   var conditions = experimentalConditions(),
-      wordList = generateRandomWordList(2),
+      wordList = generateRandomWordList(sampleSize),
       x = function() {
         if (conditions.length > 0) {
           var state = conditions.shift();
@@ -232,25 +261,4 @@ var runExperiment = function() {
 };
 
 // Run the experiment then post to server
-runExperiment().then(function() {
-  var http = new XMLHttpRequest();
-  var url = "/save-results";
-  var data = JSON.stringify(experimentLog);
-  http.open("POST", url, true);
-  http.setRequestHeader("Content-type", "application/json");
-  http.onreadystatechange = function() {
-    if(http.readyState == 4 && http.status == 200) {
-      concludeExperiment(JSON.parse(http.responseText));
-    }
-  }
-  http.send(data);
-});
-
-// Conclude
-var concludeExperiment = function(response) {
-  if (response.success === true) {
-    window.location.href = '/complete';
-  } else {
-    window.location.href = '/error';
-  }
-}
+runExperiment().then(saveResults);
