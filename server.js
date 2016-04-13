@@ -1,10 +1,10 @@
 var express = require('express');
 var app = express();
-
+var bodyParser = require('body-parser');
 var json2csv = require('json2csv');
 var fs = require('fs');
 
-var csvFields = ['correct', 'duration', 'real', 'response', 'responseTime', 'state', 'word'];
+app.use(bodyParser.json());
 
 function leadingZero(number) {
   if (number.toString().length === 1) {
@@ -25,8 +25,15 @@ app.get('/test', function (req, res) {
 });
 
 app.get('/complete', function (req, res) {
+  res.render('complete');
+});
 
-  var experiment = JSON.parse(req.query.data);
+app.get('/error', function (req, res) {
+  res.render('error');
+});
+
+app.post('/save-results', function(req, res) {
+  var experiment = req.body;
   var timestamp = new Date();
   var fileName = timestamp.getFullYear() + '-'
                 + leadingZero(timestamp.getMonth()+1) + '-'
@@ -36,20 +43,20 @@ app.get('/complete', function (req, res) {
                 + leadingZero(timestamp.getSeconds())
                 + '-results.csv';
 
-  json2csv({ data: experiment, fields: csvFields }, function(err, csv) {
+  json2csv({ data: experiment }, function(err, csv) {
     if (err) {
       console.log(err);
-      res.render('complete', { success: false, message: 'json2csv formatting fail' });
+      res.json({ success: false, message: 'json2csv: ' + err });
     }
     fs.writeFile('saved-data/' + fileName, csv, function(err) {
       if (err) {
         console.log(err);
-        res.render('complete', { success: false, message: 'csv file not saved' });
+        res.json({ success: false, message: 'writeFile: ' + err });
       }
       console.log('file saved');
     });
   });
-  res.render('complete', { success: true, message: 'success' });
+  res.json({ success: true });
 });
 
 app.listen(3000, function () {
