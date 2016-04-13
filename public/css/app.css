@@ -91,3 +91,29 @@ body {
   width: 100%;
   text-align: center;
 }
+
+.bookend {
+  position: absolute;
+  top: 50%;
+  -moz-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  width: 100%;
+  text-align: center;
+}
+.content {
+  font-size: 80%;
+  display: inline-block;
+  width: 350px;
+  text-align: left;
+}
+.content h1 {
+  margin: 0 0 0.5em 0;
+}
+.content ul {
+  margin: 1em 0;
+  padding: 0;
+}
+.content li {
+  margin: 0 0 0.5em 0;
+}
