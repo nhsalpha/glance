@@ -4,8 +4,12 @@ html(lang="en")
   include ./includes/head.jade
 
   body
-    h1 Glance test
-    p
-      Use “Q” to answer “yes” and “P” to answer “no”.
-    p
-      a(href='/test') Start test
+    div.bookend
+      div.content
+        h1 Glance test
+        p You will be prompted to recognise a series of words.
+        ul
+          li Answer “yes” by pressing the “Q” key
+          li Answer “no” by pressing “P”
+        p
+          a(href='/test') Start test
