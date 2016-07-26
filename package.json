@@ -5,13 +5,13 @@
   "main": "server.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nhsalpha/glance.git"
+    "url": "git+https://github.com/nhsuk/glance.git"
   },
   "author": "#nhsalpha",
   "bugs": {
-    "url": "https://github.com/nhsalpha/glance/issues"
+    "url": "https://github.com/nhsuk/glance/issues"
   },
-  "homepage": "https://github.com/nhsalpha/glance#readme",
+  "homepage": "https://github.com/nhsuk/glance#readme",
   "dependencies": {
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
