@@ -1,8 +1,17 @@
 container = document.getElementById("container");
 maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
+breakElement = document.getElementById("break");
+breakCounter = document.getElementById("break-remaining");
+
+fonts = ["fs-me", "frutiger"];
+polarity = ["polarity-normal", "polarity-reversed"];
+sampleSize = 10;
 wordLength = 6;
-sampleSize = 2;
+breakEvery = 5;
+breakDuration = 3000;  // ms
+
+globalCount = 0;
 experimentLog = [];
 
 // -------------------- Utility functions --------------------
@@ -61,9 +70,7 @@ var generateRandomWordList = function(length) {
 
 // Environmental conditions - polarity, fonts we're testing...
 var experimentalConditions = function() {
-  var fonts = ["fs-me", "frutiger"],
-      polarity = ["polarity-normal", "polarity-reversed"],
-      conditions = [];
+  var conditions = [];
 
   polarity = shuffleArray(polarity);
   for (var i = 0; i < polarity.length; ++i) {
@@ -159,7 +166,7 @@ var awaitResponse = function(real) {
   var listener;
   var promise = new Promise(function(fulfill, reject) {
     var startTime = Date.now();
-    window.setTimeout(function() { reject({response: "timeout"}); }, 5000);
+    window.setTimeout(function() { reject({ response: "timeout" }); }, 5000);
 
     listener = function(event) {
       var resolution = {
@@ -175,14 +182,19 @@ var awaitResponse = function(real) {
         resolution.response = "pseudo";
         real ? reject(resolution) : fulfill(resolution);
       }
+
     };
 
     document.addEventListener("keydown", listener);
   });
 
   promise.then(
-    function() { document.removeEventListener("keydown", listener); },
-    function() { document.removeEventListener("keydown", listener); }
+    function() {
+      document.removeEventListener("keydown", listener);
+    },
+    function() {
+      document.removeEventListener("keydown", listener);
+    }
   );
 
   return promise;
@@ -194,51 +206,76 @@ var runTrial = function(word, exposureDuration) {
     .then(showMask)
     .then(function() { return showWord(word.text, exposureDuration); })
     .then(showMask)
-    .then(function() { return awaitResponse(word.real); });
+    .then(function() {
+      return awaitResponse(word.real);
+    });
 };
 
 // Run series of trials, with changing "step duration":
 var runSeries = function(words, state) {
-  var words = words.slice(0),
-      exposureDuration = 500,
-      x = function x() {
-        if (words.length > 0) {
-          var nextWord = words.shift(),
-              trialResult = {
-                word: nextWord.text,
-                real: nextWord.real,
-                duration: exposureDuration,
-                state: state
-              };
+  var words = words.slice(0);
+  var exposureDuration = 500;
+  var x = function x() {
+    if (words.length > 0) {
 
-          return runTrial(nextWord, exposureDuration).then(
-            // Promise - success resolution
-            function(resolution) {
-              trialResult.response = resolution.response;
-              trialResult.responseTime = resolution.responseTime;
-              trialResult.correct = true;
-              experimentLog.push(trialResult);
+      var whichPromise;
 
-              exposureDuration = exposureDuration * 0.75;
-              return x();
-            },
-            // Promise - fail resolution
-            function(resolution) {
-              trialResult.response = resolution.response;
-              trialResult.responseTime = resolution.responseTime;
-              trialResult.correct = false;
-              experimentLog.push(trialResult);
+      if (globalCount % breakEvery === 0 && globalCount > 0) {
+        var count = breakDuration/1000;
+        breakCounter.textContent = count;
+        breakElement.style.display = 'block';
+        var breakInterval = window.setInterval(function() {
+          if (count > 0) {
+            count--;
+          } else if (count === 0) {
+            clearInterval(breakInterval);
+          }
+          breakCounter.textContent = count;
+        }, 1000);
 
-              exposureDuration = exposureDuration * 1.5;
-              return x();
-            }
-          );
-        }
-        else {
-          return true;
-        }
-      };
+        whichPromise = timeoutPromise(breakDuration).then(function() {
+          breakElement.style.display = 'none';
+          globalCount = 0;
+          return x();
+        });
 
+
+      } else {
+        var nextWord = words.shift();
+        var trialResult = {
+          word: nextWord.text,
+          real: nextWord.real,
+          duration: exposureDuration,
+          state: state
+        };
+        whichPromise = runTrial(nextWord, exposureDuration).then(
+          // Promise - success resolution
+          function(resolution) {
+            trialResult.response = resolution.response;
+            trialResult.responseTime = resolution.responseTime;
+            trialResult.correct = true;
+            experimentLog.push(trialResult);
+            exposureDuration = exposureDuration * 0.75;
+            globalCount++;
+            return x();
+          },
+          // Promise - fail resolution
+          function(resolution) {
+            trialResult.response = resolution.response;
+            trialResult.responseTime = resolution.responseTime;
+            trialResult.correct = false;
+            experimentLog.push(trialResult);
+            exposureDuration = exposureDuration * 1.5;
+            globalCount++;
+            return x();
+          }
+        );
+      }
+      return whichPromise;
+    } else {
+      return true;
+    }
+  };
   return x();
 };
 

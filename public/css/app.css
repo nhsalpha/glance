@@ -45,7 +45,8 @@ body {
   color: #fff;
 }
 
-#container > div {
+#container > div,
+#break {
   display: none;
 }
 
