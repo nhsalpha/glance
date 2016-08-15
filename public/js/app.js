@@ -224,20 +224,23 @@ var runSeries = function(words, state) {
         var count = breakDuration/1000;
         breakCounter.textContent = count;
         breakElement.style.display = 'block';
-        var breakInterval = window.setInterval(function() {
-          if (count > 0) {
-            count--;
-          } else if (count === 0) {
-            clearInterval(breakInterval);
-          }
-          breakCounter.textContent = count;
-        }, 1000);
 
-        whichPromise = timeoutPromise(breakDuration).then(function() {
-          breakElement.style.display = 'none';
-          globalCount = 0;
-          return x();
-        });
+        whichPromise = new Promise(function(resolve, reject) {
+          var timer = window.setInterval(function() {
+            if (count > 0) {
+              count--;
+            } else if (count === 0) {
+              clearInterval(timer);
+              resolve('Timer reached end');
+            }
+            breakCounter.textContent = count;
+          }, 1000);
+        })
+          .then(function() {
+            breakElement.style.display = 'none';
+            globalCount = 0;
+            return x();
+          });
 
 
       } else {
@@ -281,21 +284,33 @@ var runSeries = function(words, state) {
 
 // The whole experiment - all font and polarity combinations
 var runExperiment = function() {
-  var conditions = experimentalConditions(),
-      wordList = generateRandomWordList(sampleSize),
-      x = function() {
-        if (conditions.length > 0) {
-          var state = conditions.shift();
-          document.body.className = state;
-          return runSeries(shuffleArray(wordList), state).then(x);
-        }
-        else {
-          return true;
-        }
-      };
-
+  var x = function() {
+    if (conditions.length > 0) {
+      var state = conditions.shift();
+      document.body.className = state;
+      return runSeries(shuffleArray(wordList), state).then(x);
+    } else {
+      return true;
+    }
+  };
   return x();
 };
 
-// Run the experiment then post to server
-runExperiment().then(saveResults);
+var runQualifying = new Promise(function(resolve, reject) {
+    // do a thing, possibly async, then…
+
+  if (0 === 0) {
+    resolve('success');
+  } else {
+    reject(Error('failure'));
+  }
+});
+
+// Generate the conditions for the experiment:
+var conditions = experimentalConditions();
+// Generate the word list
+var wordList = generateRandomWordList(sampleSize);
+
+runQualifying.then(function() {
+  runExperiment().then(saveResults);
+});

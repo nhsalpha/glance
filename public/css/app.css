@@ -102,11 +102,20 @@ body {
   width: 100%;
   text-align: center;
 }
+.polarity-normal .bookend {
+  background: #fff;
+}
+.polarity-reversed .bookend {
+  background: #000;
+}
 .content {
   font-size: 80%;
   display: inline-block;
   width: 350px;
   text-align: left;
+}
+.content.center {
+  text-align: center;
 }
 .content h1 {
   margin: 0 0 0.5em 0;
