@@ -37,7 +37,7 @@ var saveResults = function() {
 // Run series of trials, with changing "step duration":
 var runSeries = function(words, state) {
   var words = words.slice(0);
-  var exposureDuration = 500;
+  var exposureDuration = maxInterval;
   var x = function x() {
     if (words.length > 0) {
 
@@ -80,7 +80,12 @@ var runSeries = function(words, state) {
             trialResult.responseTime = resolution.responseTime;
             trialResult.correct = true;
             experimentLog.push(trialResult);
-            exposureDuration = exposureDuration * 0.75;
+            if (exposureDuration > minInterval) {
+              exposureDuration = exposureDuration * 0.75;
+              if (exposureDuration < minInterval) {
+                exposureDuration = minInterval;
+              }
+            }
             globalCount++;
             return x();
           },
@@ -90,7 +95,12 @@ var runSeries = function(words, state) {
             trialResult.responseTime = resolution.responseTime;
             trialResult.correct = false;
             experimentLog.push(trialResult);
-            exposureDuration = exposureDuration * 1.5;
+            if (exposureDuration < maxInterval) {
+              exposureDuration = exposureDuration * 1.5;
+              if (exposureDuration > maxInterval) {
+                exposureDuration = maxInterval;
+              }
+            }
             globalCount++;
             return x();
           }
