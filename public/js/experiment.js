@@ -36,6 +36,7 @@ var saveResults = function() {
 
 // Run series of trials, with changing "step duration":
 var runSeries = function(words, state) {
+  var correctCount = 0;
   var words = words.slice(0);
   var exposureDuration = maxInterval;
   var x = function x() {
@@ -73,6 +74,7 @@ var runSeries = function(words, state) {
           duration: exposureDuration,
           state: state
         };
+        console.log('correctCount: ' + correctCount);
         whichPromise = runTrial(nextWord, exposureDuration).then(
           // Promise - success resolution
           function(resolution) {
@@ -80,12 +82,18 @@ var runSeries = function(words, state) {
             trialResult.responseTime = resolution.responseTime;
             trialResult.correct = true;
             experimentLog.push(trialResult);
-            if (exposureDuration > minInterval) {
+            if (exposureDuration > minInterval && correctCount === 3) {
               exposureDuration = exposureDuration * 0.75;
               if (exposureDuration < minInterval) {
                 exposureDuration = minInterval;
               }
             }
+            if (correctCount === 3) {
+              correctCount = 0;
+            } else {
+              correctCount++;
+            }
+            console.log('exposureDuration: ' + exposureDuration);
             globalCount++;
             return x();
           },
@@ -101,6 +109,8 @@ var runSeries = function(words, state) {
                 exposureDuration = maxInterval;
               }
             }
+            correctCount = 0;
+            console.log('exposureDuration: ' + exposureDuration);
             globalCount++;
             return x();
           }
