@@ -20,8 +20,16 @@ app.get('/', function (req, res) {
   res.render('index');
 });
 
-app.get('/test', function (req, res) {
-  res.render('test');
+app.get('/qualifier', function (req, res) {
+  res.render('qualifier');
+});
+
+app.get('/experiment-intro', function (req, res) {
+  res.render('experiment-intro');
+});
+
+app.get('/experiment', function (req, res) {
+  res.render('experiment');
 });
 
 app.get('/complete', function (req, res) {
