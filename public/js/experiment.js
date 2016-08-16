@@ -128,14 +128,6 @@ var runExperiment = function() {
   return x();
 };
 
-var runQualifying = new Promise(function(resolve, reject) {
-  if (0 === 0) {
-    resolve('success');
-  } else {
-    reject(Error('failure'));
-  }
-});
-
 // Generate the conditions for the experiment:
 var conditions = experimentalConditions();
 // Generate the word list
