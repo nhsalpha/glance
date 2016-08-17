@@ -11,12 +11,11 @@ var runQualifying = function(words) {
       promise = runTrial(nextWord, exposureDuration).then(
         // Promise - success resolution
         function(resolution) {
-          correctCount++;
-          return x();
-        },
-        // Promise - fail resolution
-        function(resolution) {
-          correctCount = 0;
+          if (resolution.responseCorrect) {
+            correctCount++;
+          } else {
+            correctCount = 0;
+          }
           return x();
         }
       );
@@ -25,7 +24,7 @@ var runQualifying = function(words) {
         correctCount = 0;
         initRound();
       } else {
-        return true;
+        window.location.href = '/stop';
       }
     }
   };

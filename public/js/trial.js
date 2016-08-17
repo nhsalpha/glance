@@ -34,23 +34,36 @@ var awaitResponse = function(real) {
 
   var listener;
   var promise = new Promise(function(fulfill, reject) {
+
     var startTime = Date.now();
-    window.setTimeout(function() { reject({ response: "timeout" }); }, 5000);
+    var resolution = {
+      response: 'timeout',
+      responseCorrect: 'timeout'
+    };
+
+    window.setTimeout(function() {
+      resolution.responseTime = Date.now() - startTime;
+      resolution.response = 'timeout';
+      resolution.responseCorrect = 'timeout';
+      fulfill(resolution);
+    }, responseTimeout);
 
     listener = function(event) {
-      var resolution = {
-        response: undefined,
-        responseTime: Date.now() - startTime
-      };
+
+      resolution.responseTime = Date.now() - startTime;
 
       if (event.keyCode === 81) {
         resolution.response = "real";
-        real ? fulfill(resolution) : reject(resolution);
+        resolution.responseCorrect = real ? true : false;
+        //real ? fulfill(resolution) : reject(resolution);
       }
       else if (event.keyCode === 80) {
         resolution.response = "pseudo";
-        real ? reject(resolution) : fulfill(resolution);
+        resolution.responseCorrect = real ? false : true;
+        //real ? reject(resolution) : fulfill(resolution);
       }
+
+      fulfill(resolution);
 
     };
 

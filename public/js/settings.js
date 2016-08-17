@@ -14,5 +14,7 @@ breakDuration = 10000;  // ms
 maxInterval = 1000;
 minInterval = 33.4;
 
+responseTimeout = 5000;
+
 globalCount = 0;
 experimentLog = [];

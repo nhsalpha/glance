@@ -44,6 +44,7 @@ var runSeries = function(words, state) {
 
       var whichPromise;
 
+      // User gets a break of up to 30 seconds every 'breakEvery' seconds
       if (globalCount % breakEvery === 0 && globalCount > 0) {
         var count = breakDuration/1000;
         breakCounter.textContent = count;
@@ -70,13 +71,15 @@ var runSeries = function(words, state) {
           }, 1000);
         })
           .then(function(str) {
-            console.log(str);
+            //console.log(str);
             breakElement.style.display = 'none';
             globalCount = 0;
             return x();
           });
 
-      } else {
+      }
+      // if we're not having a break, run the next trial
+      else {
         var nextWord = words.shift();
         var trialResult = {
           word: nextWord.text,
@@ -89,35 +92,32 @@ var runSeries = function(words, state) {
           function(resolution) {
             trialResult.response = resolution.response;
             trialResult.responseTime = resolution.responseTime;
-            trialResult.correct = true;
+            trialResult.correct = resolution.responseCorrect;
             experimentLog.push(trialResult);
-            if (exposureDuration > minInterval && correctCount === 3) {
-              exposureDuration = exposureDuration * 0.75;
-              if (exposureDuration < minInterval) {
-                exposureDuration = minInterval;
+            // if the response was actually correct:
+            if (resolution.responseCorrect) {
+              if (exposureDuration > minInterval && correctCount === 3) {
+                exposureDuration = exposureDuration * 0.75;
+                if (exposureDuration < minInterval) {
+                  exposureDuration = minInterval;
+                }
+              }
+              if (correctCount === 3) {
+                correctCount = 0;
+              } else {
+                correctCount++;
               }
             }
-            if (correctCount === 3) {
+            // if the response was wrong or a timeout:
+            else {
+              if (exposureDuration < maxInterval) {
+                exposureDuration = exposureDuration * 1.5;
+                if (exposureDuration > maxInterval) {
+                  exposureDuration = maxInterval;
+                }
+              }
               correctCount = 0;
-            } else {
-              correctCount++;
             }
-            globalCount++;
-            return x();
-          },
-          // Promise - fail resolution
-          function(resolution) {
-            trialResult.response = resolution.response;
-            trialResult.responseTime = resolution.responseTime;
-            trialResult.correct = false;
-            experimentLog.push(trialResult);
-            if (exposureDuration < maxInterval) {
-              exposureDuration = exposureDuration * 1.5;
-              if (exposureDuration > maxInterval) {
-                exposureDuration = maxInterval;
-              }
-            }
-            correctCount = 0;
             globalCount++;
             return x();
           }

@@ -36,6 +36,10 @@ app.get('/complete', function (req, res) {
   res.render('complete');
 });
 
+app.get('/stop', function (req, res) {
+  res.render('stop');
+});
+
 app.get('/error', function (req, res) {
   res.render('error');
 });
