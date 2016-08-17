@@ -25,7 +25,6 @@ var runQualifying = function(words) {
         correctCount = 0;
         initRound();
       } else {
-        console.log('this is a fail');
         return true;
       }
     }

@@ -9,7 +9,7 @@ polarity = ["polarity-normal", "polarity-reversed"];
 sampleSize = 10;
 wordLength = 6;
 breakEvery = 5;
-breakDuration = 3000;  // ms
+breakDuration = 10000;  // ms
 
 maxInterval = 1000;
 minInterval = 33.4;

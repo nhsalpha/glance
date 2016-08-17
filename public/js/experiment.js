@@ -49,18 +49,28 @@ var runSeries = function(words, state) {
         breakCounter.textContent = count;
         breakElement.style.display = 'block';
 
-        whichPromise = new Promise(function(resolve, reject) {
+        whichPromise = new Promise(function(resolve) {
+
+          breakListener = function(event) {
+            document.removeEventListener("keydown", breakListener);
+            resolve('User keyed');
+          };
+
+          document.addEventListener("keydown", breakListener);
+
           var timer = window.setInterval(function() {
             if (count > 0) {
               count--;
               breakCounter.textContent = count;
             } else if (count === 0) {
               clearInterval(timer);
+              document.removeEventListener("keydown", breakListener);
               resolve('Timer reached end');
             }
           }, 1000);
         })
-          .then(function() {
+          .then(function(str) {
+            console.log(str);
             breakElement.style.display = 'none';
             globalCount = 0;
             return x();
@@ -74,7 +84,6 @@ var runSeries = function(words, state) {
           duration: exposureDuration,
           state: state
         };
-        console.log('correctCount: ' + correctCount);
         whichPromise = runTrial(nextWord, exposureDuration).then(
           // Promise - success resolution
           function(resolution) {
@@ -93,7 +102,6 @@ var runSeries = function(words, state) {
             } else {
               correctCount++;
             }
-            console.log('exposureDuration: ' + exposureDuration);
             globalCount++;
             return x();
           },
@@ -110,7 +118,6 @@ var runSeries = function(words, state) {
               }
             }
             correctCount = 0;
-            console.log('exposureDuration: ' + exposureDuration);
             globalCount++;
             return x();
           }
