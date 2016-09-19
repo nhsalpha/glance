@@ -15,12 +15,6 @@ body {
   font-size: 12mm; /* 8mm cap height */
 }
 
-/*.practice,
-#prompt {
-  font-family: Georgia, serif;
-  font-size: 12mm; /* 8mm cap height */
-/*}*/
-
 .arial #word,
 .arial #mask {
   font-family: Arial, sans-serif;
