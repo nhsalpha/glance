@@ -1,3 +1,17 @@
+// experiment specific settings
+breakElement = document.getElementById("break");
+breakCounter = document.getElementById("break-remaining");
+
+globalCount = 0;
+seriesCount = 0;
+halfwayFlag = false;
+experimentLog = [];
+
+sampleSize = 4; // should be 100
+totalSize = (fonts.length * polarity.length) * sampleSize;
+breakEvery = 2; // should be 50
+breakDuration = 3000;  // should be 30 seconds
+
 // Environmental conditions - polarity, fonts we're testing...
 var experimentalConditions = function() {
   var conditions = [];
@@ -26,8 +40,10 @@ var saveResults = function() {
       var response = JSON.parse(http.responseText);
       if (response.success === true) {
         window.location.href = '/complete';
+        //console.log('response: success');
       } else {
         window.location.href = '/error';
+        //console.log('response: ERROR');
       }
     }
   }
@@ -44,8 +60,9 @@ var runSeries = function(words, state) {
 
       var whichPromise;
 
-      // User gets a break of up to 30 seconds every 'breakEvery' seconds
-      if (globalCount % breakEvery === 0 && globalCount > 0) {
+      if (seriesCount % breakEvery === 0 && seriesCount > 0) {
+        // User gets a break of up to 30 seconds every 'breakEvery' trials
+
         var count = breakDuration/1000;
         breakCounter.textContent = count;
         breakElement.style.display = 'block';
@@ -71,9 +88,8 @@ var runSeries = function(words, state) {
           }, 1000);
         })
           .then(function(str) {
-            //console.log(str);
             breakElement.style.display = 'none';
-            globalCount = 0;
+            seriesCount = 0;
             return x();
           });
 
@@ -118,6 +134,7 @@ var runSeries = function(words, state) {
               }
               correctCount = 0;
             }
+            seriesCount++;
             globalCount++;
             return x();
           }

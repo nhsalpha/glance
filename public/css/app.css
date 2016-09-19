@@ -50,7 +50,7 @@ body {
 }
 
 #container > div,
-#break {
+.break {
   display: none;
 }
 
