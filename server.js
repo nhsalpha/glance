@@ -1,9 +1,15 @@
 var express = require('express');
-var app = express();
+var nunjucks = require('nunjucks');
 var bodyParser = require('body-parser');
 var json2csv = require('json2csv');
 var fs = require('fs');
 
+var app = express();
+nunjucks.configure('views', {
+    autoescape: true,
+    express: app
+});
+app.use(express.static('public'));
 app.use(bodyParser.json());
 
 function leadingZero(number) {
@@ -13,35 +19,32 @@ function leadingZero(number) {
   return number;
 }
 
-app.use(express.static('public'));
-app.set('view engine', 'jade');
-
 app.get('/', function (req, res) {
-  res.render('index');
+  res.render('index.html');
 });
 
 app.get('/qualifier', function (req, res) {
-  res.render('qualifier');
+  res.render('qualifier.html');
 });
 
 app.get('/experiment-intro', function (req, res) {
-  res.render('experiment-intro');
+  res.render('experiment-intro.html');
 });
 
 app.get('/experiment', function (req, res) {
-  res.render('experiment');
+  res.render('experiment.html');
 });
 
 app.get('/complete', function (req, res) {
-  res.render('complete');
+  res.render('complete.html');
 });
 
 app.get('/stop', function (req, res) {
-  res.render('stop');
+  res.render('stop.html');
 });
 
 app.get('/error', function (req, res) {
-  res.render('error');
+  res.render('error.html');
 });
 
 app.post('/save-results', function(req, res) {

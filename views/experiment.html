@@ -1,0 +1,23 @@
+{% extends '_layouts/layout.html' %}
+
+{% block content %}
+
+<div id="container">
+  <div id="fixation-rectangle"></div>
+  <div id="mask">==<|=</div>
+  <div id="word"></div>
+  <div id="prompt">Was that a word?</div>
+</div>
+
+<div id="break" class="break bookend">
+  <div class="content center">
+    <p>
+      Time for a break <span id="break-remaining">00</span>
+    </p>
+    <p>
+      Press any key to continue
+    </p>
+  </div>
+</div>
+{% include '_includes/experiment-foot.html' %}
+{% endblock %}

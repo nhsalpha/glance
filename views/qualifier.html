@@ -1,0 +1,12 @@
+{% extends '_layouts/layout.html' %}
+{% set bodyclass = 'practice' %}
+
+{% block content %}
+<div id="container">
+  <div id="fixation-rectangle"></div>
+  <div id="mask">==<|=</div>
+  <div id="word">word</div>
+  <div id="prompt">Was that a word?</div>
+</div>
+{% include '_includes/qualifier-foot.html' %}
+{% endblock %}
