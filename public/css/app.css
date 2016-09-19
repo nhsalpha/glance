@@ -11,26 +11,30 @@ html, body {
 }
 
 body {
-  font-family: courier, monospace;
-  font-size: 20px;
-}
-
-.practice #word {
   font-family: Georgia, serif;
   font-size: 12mm; /* 8mm cap height */
 }
 
-.arial #word {
+/*.practice,
+#prompt {
+  font-family: Georgia, serif;
+  font-size: 12mm; /* 8mm cap height */
+/*}*/
+
+.arial #word,
+.arial #mask {
   font-family: Arial, sans-serif;
   font-size: 6mm; /* 4mm cap height */
 }
 
-.frutiger #word {
+.frutiger #word,
+.frutiger #mask {
   font-family: 'Frutiger LT W01_55 Roma1475738', sans-serif;
   font-size: 6mm; /* 4mm cap height */
 }
 
-.fs-me #word {
+.fs-me #word,
+.fs-me #mask {
   font-family: 'fs-me', sans-serif;
   font-size: 6mm; /* 4mm cap height */
 }
@@ -45,7 +49,8 @@ body {
   color: #fff;
 }
 
-#container > div {
+#container > div,
+.break {
   display: none;
 }
 
@@ -101,17 +106,27 @@ body {
   width: 100%;
   text-align: center;
 }
+.polarity-normal .bookend {
+  background: #fff;
+}
+.polarity-reversed .bookend {
+  background: #000;
+}
 .content {
   font-size: 80%;
   display: inline-block;
-  width: 350px;
+  width: 600px;
   text-align: left;
+}
+.content.center {
+  text-align: center;
 }
 .content h1 {
   margin: 0 0 0.5em 0;
 }
 .content ul {
-  margin: 1em 0;
+  list-style: none;
+  margin: 0;
   padding: 0;
 }
 .content li {

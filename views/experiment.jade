@@ -1,0 +1,19 @@
+doctype html
+html(lang="en")
+
+  include ./includes/head.jade
+
+  body
+    div#container
+      div#fixation-rectangle
+      div#mask ==<|=
+      div#word Word
+      div#prompt Was that a word?
+    
+    div#break.break.bookend
+      div.content.center
+        p Time for a break 
+          span#break-remaining 00
+        p Press any key to continue
+    
+    include ./includes/experiment-foot.jade
