@@ -33,6 +33,12 @@ body {
   font-size: 6mm; /* 4mm cap height */
 }
 
+.system #word,
+.system #mask {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: 6mm; /* 4mm cap height */
+}
+
 .polarity-normal {
   background: #fff;
   color: #000;
