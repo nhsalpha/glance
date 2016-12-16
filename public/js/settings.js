@@ -2,7 +2,7 @@ container = document.getElementById("container");
 maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
 
-fonts = ["system", "frutiger"];
+fonts = ["fs-me", "frutiger"];
 polarity = ["polarity-normal"];
 wordLength = 6;
 
