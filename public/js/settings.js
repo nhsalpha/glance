@@ -3,7 +3,7 @@ maskElement = document.getElementById("mask");
 wordElement = document.getElementById("word");
 
 fonts = ["fs-me", "frutiger"];
-polarity = ["polarity-normal", "polarity-reversed"];
+polarity = ["polarity-normal"];
 wordLength = 6;
 
 maxInterval = 1000;
